@@ -40,7 +40,7 @@ function backlogContains(entry) {
 }
 function backlogAdd(entry) {
 	var now = Date.now();
-	if(this[now]) throw 'BacklogPostDatedEntry';
+	if(this[now]) throw {'name':'BacklogPostDatedEntry', 'message':"Backlog entry exists for current time. Check system clock or db file integrity."};
 
 	this['latest'] = this[now] = entry;
 	this.save();
