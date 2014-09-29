@@ -10,7 +10,7 @@ This module requires a (separate) GPG keyring loaded with only the verifying pub
 
 ###Preparations
 
-Now, for the canary to be useful, **you must securely store ONE and ONLY ONE copy of the signing key, and be prepared to PERMANENTLY delete it on a moment's notice.** Add signed messages to the canary frequently enough that the key's deletion would be noticed relatively quickly. 
+Now, for the canary to be useful, **you must securely store ONE and ONLY ONE copy of the signing key on a separate machine, and be prepared to PERMANENTLY delete it on a moment's notice.** Add signed messages to the canary frequently enough that the key's deletion would be noticed relatively quickly. 
 
 ##API
 
