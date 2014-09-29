@@ -49,3 +49,6 @@ As above, it takes a one-argument callback for error reporting.
 
 Writes are immediately synced to disk.
 
+#Donate
+
+Bitcoin: 1BtYJ5WPqg68Y4nDHGenxsmLA9VQyAWE6W
