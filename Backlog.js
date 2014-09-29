@@ -1,11 +1,5 @@
 var fs = require('fs');
 
-// creation works
-// loading works
-// saving works
-// contains method works
-// checks out! :D
-
 function Backlog(file, callback) {
 	this.path = file;
 	this.initialized = false;
@@ -13,9 +7,7 @@ function Backlog(file, callback) {
 	// this object is a dict of canary messages
 	this.init(callback);
 }
-// attach all methods as prototype methods;
-// if they're assigned directly to the object,
-// they will be treated as Backlog data
+
 Backlog.prototype._load = backlog_load;
 Backlog.prototype.contains = backlogContains;
 Backlog.prototype.save = backlogSave;
