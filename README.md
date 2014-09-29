@@ -37,13 +37,15 @@ Returns the latest canary message in the Backlog.
 
 Arguments `alg`, `enc` are optional; defaults to ('sha256', 'hex').
 
-Returns the `alg` hash of the latest message in `enc` encoding.
+Returns the `alg` digest of the latest message in `enc` encoding.
+
+This and the following method may be useful if you want to include the previous method digests in the current message.
 
 ###Canary.getBacklogHash(alg, enc)
 
 Arguments `alg`, `enc` are optional; defaults to ('sha256', 'hex').
 
-Returns the `alg` hash of the concatenation of all messages in the Backlog in `enc` encoding.
+Returns the `alg` digest of the concatenation of all messages in the Backlog in `enc` encoding.
 
 ###Canary.feedString(msg, callback)
 
