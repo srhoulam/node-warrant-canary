@@ -1,5 +1,6 @@
 var	path = require('path'),
 	cproc = require('child_process'),
+	crypto = require('crypto'),
 	Backlog = require('./Backlog'),
 	StreamReader = require('./StreamReader');
 
@@ -14,6 +15,8 @@ function Canary(db, pkring) {
 }
 
 Canary.prototype.getLatest = canaryGetLatest;
+Canary.prototype.getLatestHash = canaryGetLatestHash;
+Canary.prototype.getBacklogHash = canaryGetBacklogHash;
 Canary.prototype.isGood = canaryIsGood;
 Canary.prototype.feedString = canaryAdd;
 Canary.prototype.feedStream = canaryFeed;
@@ -25,6 +28,20 @@ function canaryIsGood() {
 }
 function canaryGetLatest() {
 	return this.messages.latest;
+}
+function canaryGetLatestHash(alg, enc) { // arguments are optional; defaults: sha256, hex
+	var sha = crypto.createHash(alg ? alg :"sha256");
+	sha.update(this.getLatest());
+	return sha.digest(enc ? enc : 'hex');
+}
+function canaryGetBacklogHash(alg, enc) {
+	var messages = this.messages.getMessageArray(),
+		sha = crypto.createHash(alg ? alg : "sha256");
+	
+	for(var i = 0; i < messages.length; i++)
+		sha.update(messages[i]);
+	
+	return sha.digest(enc ? enc : 'hex');
 }
 function canaryAdd(msg, callback) {
 	if(!this.isGood()) throw {'name':'CanaryNotGood','message':"Canary initialization failed"};

@@ -15,7 +15,16 @@ Backlog.prototype.init = backlogInit;
 Backlog.prototype.add = backlogAdd;
 Backlog.prototype.create = backlogCreate;
 Backlog.prototype.toString = backlogToString;
+Backlog.prototype.getMessageArray = backlogGetMessageArray;
 
+function backlogGetMessageArray() {
+	var result = [];
+	for(var i in this)
+		if(parseInt(i)) // this will exclude the `path` and `initialized` attributes
+			result.push(this[i]);
+
+	return result;
+}
 function backlogToString() {
 	return JSON.stringify(this);
 }
