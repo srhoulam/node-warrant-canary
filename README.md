@@ -22,8 +22,8 @@ The canary will not accept messages without a valid signature. That is to say th
 
 The constructor takes two arguments:
 
-*`db`: the path to the file where it will store a backlog of canary messages.
-*`pkring`: the path to the public keyring containing __ONLY__ the verifying key.
+* `db`: the path to the file where it will store a backlog of canary messages.
+* `pkring`: the path to the public keyring containing __ONLY__ the verifying key.
 
 It returns a Canary object.
 
