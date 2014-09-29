@@ -18,9 +18,9 @@ Now, for the canary to be useful, **you must securely store ONE and ONLY ONE cop
 
 The canary will not accept messages without a valid signature. That is to say that unsigned messages are messages without a valid signature. I suggest using `gpg`'s `--clearsign` flag to produce a signed message that is human-readable.
 
-##API
+#API
 
-####Canary(db, pkring)
+###Canary(db, pkring)
 
 The constructor takes two arguments:
 
@@ -29,11 +29,11 @@ The constructor takes two arguments:
 
 It returns a Canary object.
 
-####Canary.getLatest()
+###Canary.getLatest()
 
 Returns the latest canary message in the Backlog.
 
-####Canary.feedString(msg, callback)
+###Canary.feedString(msg, callback)
 
 This function takes a string argument, `msg`, to be verified and (hopefully) added to the Backlog of Canary messages.
 
@@ -41,7 +41,7 @@ Give it a one-argument callback, e.g., `function(err) { complainAbout(err); }`.
 
 Writes are immediately synced to disk.
 
-####Canary.feedStream(stream, callback)
+###Canary.feedStream(stream, callback)
 
 This function takes a stream argument, `stream`, to be verified and (hopefully) added to the Backlog of Canary messages.
 
