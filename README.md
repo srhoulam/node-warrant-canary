@@ -10,6 +10,8 @@ This module requires a (separate) GPG keyring loaded with only the verifying pub
 
 ###Preparations and things to note
 
+For general information on warrant canaries, visit https://www.eff.org/deeplinks/2014/04/warrant-canary-faq
+
 This warrant canary was written under the assumption that the signing key is entirely inaccessible to it. It is the operator's responsibility to manage, store, secure, and, if necessary, destroy the signing key.
 
 Now, for the canary to be useful, **you must securely store ONE and ONLY ONE copy of the signing key on a separate machine, and be prepared to PERMANENTLY delete it on a moment's notice.** Add signed messages to the canary frequently enough that the key's deletion would be noticed relatively quickly. 
