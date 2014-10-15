@@ -14,6 +14,7 @@ function Canary(db, pkring) {
 	this.initialized = this.messages.initialized ? true : false;
 }
 
+Canary.prototype.getKey = canaryGetKey;
 Canary.prototype.getLatest = canaryGetLatest;
 Canary.prototype.getLatestHash = canaryGetLatestHash;
 Canary.prototype.getBacklogHash = canaryGetBacklogHash;
@@ -25,6 +26,20 @@ Canary.prototype._add = canary_add;
 function canaryIsGood() {
 	if(this.keyring && this.initialized) return true;
 	else return false;
+}
+function canaryGetKey(callback) {
+	var result = '';
+	var gpgexp = cproc.spawn('gpg',
+		['--no-default-keyring',
+			'--keyring', path.resolve(this.keyring),
+			'-a', '--export']
+	);
+	gpgexp.on('error', function(err) { callback(null, err); });
+	gpgexp.stdout.on('data', function(chunk) { result += chunk; });
+	gpgexp.stdout.on('end', function() { callback(result, null); });
+	gpgexp.on('exit', function(code, signal) {
+		if(code != 0) callback(null, {'name':'GPGExportError', 'message':'Nonzero exit status. Code: ' + code});
+	});
 }
 function canaryGetLatest() {
 	return this.messages.latest;
