@@ -14,7 +14,7 @@ For general information on warrant canaries, visit https://www.eff.org/deeplinks
 
 This warrant canary was written under the assumption that the signing key is entirely inaccessible to it. It is the operator's responsibility to manage, store, secure, and, if necessary, destroy the signing key.
 
-For ideal usefulness, store one copy of the signing key on a separate machine, and securely delete the key once it outlives its usefulness. Adding signed messages to the canary more frequently enables the key's deletion would to be noticed more quickly by anyone watching.
+For ideal usefulness, store one copy of the signing key on a separate machine, and securely delete the key once it outlives its usefulness. Adding signed messages to the canary more frequently enables the key's deletion to be noticed more quickly by anyone watching.
 
 The canary will not accept messages without a valid signature. That is to say that unsigned messages are messages without a valid signature. I suggest using `gpg`'s `--clearsign` flag to produce a signed message that is human-readable.
 
@@ -47,7 +47,7 @@ Arguments `alg`, `enc` are optional; defaults to ('sha256', 'hex').
 
 Returns the `alg` digest of the latest message in `enc` encoding.
 
-This and the following method may be useful if you want to include the previous method digests in the current message.
+This and the following method may be useful if you want to include previous message digests in the current message.
 
 ###Canary.getBacklogHash(alg, enc)
 
