@@ -29,11 +29,11 @@ The constructor takes two arguments:
 
 It returns a Canary object.
 
-###Canary.getKey(cb)
+###Canary.getKey(callback)
 
 Retrieves the public key used to verify Canary messages and passes it to the supplied callback.
 
-Takes a two-argument callback, e.g., `cb(key, err)`.
+Takes a two-argument callback, e.g., `callback(key, err)`.
 
 If successful, the PEM-encoded key will be passed as the first argument. If unsuccessful, an error object will be passed as the second argument.
 
