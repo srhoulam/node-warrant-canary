@@ -1,73 +1,97 @@
-var fs = require('fs');
+var levelup = require('level');
 
-function Backlog(file, callback) {
-	this.path = file;
-	this.initialized = false;
+function Backlog(dbname) {
+	this.db = levelup(dbname);
 	// other than these properties,
 	// this object is a dict of canary messages
-	this.init(callback);
 }
 
-Backlog.prototype._load = backlog_load;
 Backlog.prototype.contains = backlogContains;
-Backlog.prototype.save = backlogSave;
-Backlog.prototype.init = backlogInit;
+Backlog.prototype.values = backlogValues;
+Backlog.prototype.keys = backlogKeys;
+Backlog.prototype.close = backlogClose;
 Backlog.prototype.add = backlogAdd;
-Backlog.prototype.create = backlogCreate;
-Backlog.prototype.toString = backlogToString;
-Backlog.prototype.getMessageArray = backlogGetMessageArray;
+Backlog.prototype.getAll = backlogGetAll;
+Backlog.prototype.getLatest = backlogGetLatest;
 
-function backlogGetMessageArray() {
-	var result = [];
-	for(var i in this)
-		if(parseInt(i)) // this will exclude the `path` and `initialized` attributes
-			result.push(this[i]);
-
-	return result;
+function backlogKeys() {
+	return this.db.createKeyStream();
 }
-function backlogToString() {
-	return JSON.stringify(this);
+function backlogValues() {
+	return this.db.createValueStream();
 }
-function backlog_load(obj) {
-	for(var i in obj)
-		if(!(i in this))
-			this[i] = obj[i];
+// cb(err, bool contains)
+function backlogContains(message, cb) {
+	var contains = false;
+	this.values().
+		on('data', function(data) {
+			if(data === message)
+				contains = true;
+		}).on('error', function(err) {
+			cb(err);
+		}).on('end', function() {
+			cb(null, contains);
+		});
 }
-function backlogContains(entry) {
-	for(var i in this) {
-		if(this[i] == entry) return i;
-	}
-	return false;
-}
-function backlogAdd(entry) {
+// cb(err, int time)
+function backlogAdd(entry, cb) {
 	var now = Date.now();
-	if(this[now]) throw {'name':'BacklogPostDatedEntry', 'message':"Backlog entry exists for current time. Check system clock or db file integrity."};
+	var self = this;
+	this.db.get(now, function(err, val) {
+		if(err.notFound)
+			return self.db.put(now, entry, function(err) {
+				if(err)
+					return cb(err);
 
-	this['latest'] = this[now] = entry;
-	this.save();
+				cb(null, now);
+			});
+
+		if(err)
+			return cb(err);
+
+		if(val)
+			return cb(new Error("Temporal anomaly."));
+
+		cb(new Error("Edge case in Backlog.add"));
+	});
 }
-function backlogCreate() {
-	fs.writeFileSync(this.path, '', {'mode':0644});
-	this.initialized = true;
+// cb(err, Array array)
+function backlogGetAll(cb) {
+	var array = [];
+	this.db.createReadStream().
+		on('data', function(data) {
+			array.push(data);
+		}).on('error', function(err) {
+			cb(err);
+		}).on('end', function() {
+			cb(null, array);
+		});
 }
-function backlogInit() {
-	try {
-		var fileData = fs.readFileSync(this.path);
-		this._load(JSON.parse(fileData));
-		this.initialized = true;
-	} catch(e) {
-		this.create();
-	}
+// cb(err, int time, String result)
+function backlogGetLatest(cb) {
+	var result = 0;
+	var self = this;
+	this.keys().
+		on('data', function(data) {
+			var num = parseInt(data);
+
+			if(num > result)
+				result = num;
+		}).on('error', function(err) {
+			cb(err);
+		}).on('end', function() {
+			if(result > 0)
+				self.db.get(result, function(err, value) {
+					if(err)
+						return cb(err);
+
+					cb(null, result, value);
+				});
+		});
 }
-function backlogSave() {
-	try {
-		fs.writeFileSync(this.path, this.toString(), {'mode':0644});
-	} catch(e) {
-		console.error("Backlog NOT saved, exception thrown on file write.");
-		console.error(e.name, e.message);
-		console.log("Dumping unsaved Backlog object:");
-		console.log(this.toString());
-	}
+
+function backlogClose(cb) {
+	this.db.close(cb);
 }
 
 module.exports = Backlog;
