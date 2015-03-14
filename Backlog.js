@@ -28,7 +28,10 @@ function backlogContains(message, cb) {
 			if(data === message)
 				contains = true;
 		}).on('error', function(err) {
-			cb(err);
+			cb({
+				name : err.name,
+				message : err.message
+			});
 		}).on('end', function() {
 			cb(null, contains);
 		});
@@ -41,18 +44,30 @@ function backlogAdd(entry, cb) {
 		if(err.notFound)
 			return self.db.put(now, entry, function(err) {
 				if(err)
-					return cb(err);
+					return cb({
+                                		name : err.name,
+                		                message : err.message
+		                        });
 
 				cb(null, now);
 			});
 
 		if(err)
-			return cb(err);
+			return cb({
+                                name : err.name,
+                                message : err.message
+                        });
 
 		if(val)
-			return cb(new Error("Temporal anomaly."));
+			return cb({
+				name : "TimeError",
+				message : "Temporal anomaly."
+			});
 
-		cb(new Error("Edge case in Backlog.add"));
+		cb({
+			name : "ExoticCircumstanceError",
+			message : "Edge case in Backlog.add"
+		});
 	});
 }
 // cb(err, Array array)
@@ -62,7 +77,10 @@ function backlogGetAll(cb) {
 		on('data', function(data) {
 			array.push(data);
 		}).on('error', function(err) {
-			cb(err);
+			cb({
+                                name : err.name,
+                                message : err.message
+                        });
 		}).on('end', function() {
 			cb(null, array);
 		});
@@ -78,12 +96,18 @@ function backlogGetLatest(cb) {
 			if(num > result)
 				result = num;
 		}).on('error', function(err) {
-			cb(err);
+			cb({
+                                name : err.name,
+                                message : err.message
+                        });
 		}).on('end', function() {
 			if(result > 0)
 				self.db.get(result, function(err, value) {
 					if(err)
-						return cb(err);
+						return cb({
+			                                name : err.name,
+                        			        message : err.message
+			                        });
 
 					cb(null, result, value);
 				});

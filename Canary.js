@@ -30,10 +30,16 @@ function canaryGetKey(callback) {
 
 	gpgexp.
 		on('error', function(err) {
-			callback(err);
+			callback({
+                                name : err.name,
+                                message : err.message
+                        });
 		}).on('exit', function(code, signal) {
 			if(code !== 0)
-				callback(new Error('Nonzero exit status. Code: ' + code));
+				callback({
+					name : "GPGExportError",
+					message : 'Nonzero exit status. Code: ' + code
+				});
 		});
 
 	gpgexp.stdout.on('data', function(data) {
@@ -61,10 +67,17 @@ function canaryAdd(msg, callback) {
 			'--verify']
 	);
 	gpgval.
-		on('error', callback).
-		on('exit', function(code, signal) {
+		on('error', function(err) {
+			cb({
+                                name : err.name,
+                                message : err.message
+                        });
+		}).on('exit', function(code, signal) {
 			if(code !== 0)
-				callback(new Error('Nonzero exit status. Code: ' + code));
+				callback({
+					name : "GPGVerifyError",
+					message : 'Nonzero exit status. Code: ' + code
+				});
 		});
 	// read stderr for "Good signature"
 	gpgval.stderr.setEncoding('utf8').
@@ -73,7 +86,10 @@ function canaryAdd(msg, callback) {
 		}).on('end', function() {
 			var res = result.join('');
 			if(res.indexOf('Good signature') > -1) self._add(msg, callback);
-			else callback(new Error(res));
+			else callback({
+				name : "GPGVerifyError",
+				message : res
+			});
 		});
 
 
@@ -99,7 +115,10 @@ function canaryFeed(stream, callback) {
 		on('error', callback).
 		on('exit', function(code, signal) {
 			if(code !== 0)
-				callback(new Error('Nonzero exit status. Code: ' + code));
+				callback({
+                                        name : "GPGVerifyError",
+                                        message : 'Nonzero exit status. Code: ' + code
+                                });
 		});
 	// read stderr for "Good signature"
 	gpgval.stderr.setEncoding('utf8').
@@ -108,7 +127,10 @@ function canaryFeed(stream, callback) {
 		}).on('end', function() {
 			var res = result.join('');
 			if(res.indexOf('Good signature') > -1) self._add(msg, callback);
-			else callback(new Error(res));
+			else callback({
+                                name : "GPGVerifyError",
+                                message : res
+                        });
 		});
 
 	// write message stream to gpg's stdin and close stream
@@ -123,10 +145,16 @@ function canary_add(msg, callback) {
 	var self = this;
 	this.messages.contains(msg, function(err, contains) {
 		if(err)
-			return callback(err);
+			return callback({
+				name : err.name,
+				message : err.message
+			});
 
 		if(contains)
-			return callback(new Error("Message not added: message is a replay."));
+			return callback({
+				name : "CanaryReplayError",
+				message : "Message not added: message is a replay."
+			});
 
 		self.messages.add(msg, callback);
 	});
